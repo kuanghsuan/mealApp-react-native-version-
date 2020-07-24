@@ -1,19 +1,27 @@
 import React from "react";
-import { View, Text, StyleSheet, Button, FlatList } from "react-native";
-import { CATEGORIES, MEALS } from "../data/dummy-data";
-import MealItem from "../components/MealItem";
-import Meal from "../models/meal";
-import MealIten from "../components/MealItem";
-import MealList from '../components/MealList';
+import { useSelector } from "react-redux";
+import { CATEGORIES } from "../data/dummy-data";
+import { View, StyleSheet } from "react-native";
+import DefaultText from "../components/DefaultText";
+import MealList from "../components/MealList";
 
 
 const CategoryMealScreen = (props) => {
   const catId = props.navigation.getParam("categoryId");
 
-  const displayedMeals = MEALS.filter(
+  const availableMeals = useSelector((state) => state.meals.filteredMeals);
+
+  const displayedMeals = availableMeals.filter(
     (meal) => meal.categoryIds.indexOf(catId) >= 0
   );
 
+  if (displayedMeals.length === 0) {
+    return (
+      <View style={styles.content}>
+        <DefaultText>No meals found, maybe check ypur filters?</DefaultText>
+      </View>
+    );
+  }
 
   return <MealList listData={displayedMeals} navigation={props.navigation} />;
 };
@@ -28,7 +36,7 @@ CategoryMealScreen.navigationOptions = (navigationData) => {
 };
 
 const styles = StyleSheet.create({
-  screen: {
+  content: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
